@@ -16,50 +16,6 @@
 */
 
 
-class StreamBuff : public Stream
-{
-  public:
-
-    uint8_t *data;
-    uint8_t pos;
-    size_t len;
-
-    StreamBuff(uint8_t *data_buffer, size_t data_len)
-      : data(data_buffer), len(data_len), pos(0)
-    {
-    }
-
-    virtual int available() {
-      return len - pos;
-    }
-
-    virtual int read() {
-      if (available() <= 0)
-        return -1;
-
-      return data[pos++];
-    }
-
-    virtual int peek() {
-      return data[pos];
-    }
-
-    virtual void flush() {
-      for (size_t i = 0; i < len; ++i) {
-        data[i] = 0;
-      }
-      pos = 0;
-    }
-
-    virtual size_t write(uint8_t d) {
-      if (available() <= 0)
-        return -1;
-
-      data[pos++] = d;
-      return 1;
-    };
-};
-
 
 void setup() {
   // put your setup code here, to run once:
