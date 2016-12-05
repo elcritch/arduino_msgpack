@@ -457,6 +457,7 @@ class StreamBuff : public Stream
 
     uint8_t *data;
     uint8_t pos;
+    uint8_t max_position;
     size_t len;
 
     StreamBuff(uint8_t *data_buffer, size_t data_len)
@@ -472,8 +473,20 @@ class StreamBuff : public Stream
       if (available() <= 0)
         return -1;
 
+      max_position = pos + 1;
+
       return data[pos++];
     }
+
+    virtual size_t write(uint8_t d) {
+      if (available() <= 0)
+        return -1;
+
+      max_position = pos+1;
+      data[pos++] = d;
+
+      return 1;
+    };
 
     virtual int peek() {
       return data[pos];
@@ -484,15 +497,25 @@ class StreamBuff : public Stream
         data[i] = 0;
       }
       pos = 0;
+      max_position = 0;
     }
 
-    virtual size_t write(uint8_t d) {
-      if (available() <= 0)
-        return -1;
+    StreamBuff& clear() {
+      this->flush();
+      return *this;
+    }
 
-      data[pos++] = d;
-      return 1;
-    };
+    StreamBuff& reset() {
+        pos = 0;
+        return *this;
+    }
+
+    StreamBuff& resetAllPositions() {
+        pos = 0;
+        max_position = 0;
+        return *this;
+    }
+
 };
 
 #endif
