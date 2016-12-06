@@ -8,7 +8,7 @@
  * 	http://www.gnu.org/licenses/lgpl-3.0.txt
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
+ * distributed under the License is distributed on an F("AS IS") BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
@@ -36,7 +36,7 @@ uint8_t msgpck_what_next(Stream * s) {
     case -1:
       return msgpck_empty;
       break;
-      
+
     case 0xc0:
       return msgpck_nil;
       break;
@@ -160,7 +160,7 @@ uint8_t msgpck_what_next(Stream * s) {
         return msgpck_map;
       if((b >> 4) == 9)
         return msgpck_array;
-      
+
       return msgpck_unknown;
   }
 }
@@ -177,24 +177,24 @@ bool msgpck_bool_next(Stream * s) {
 
 bool msgpck_integer_next(Stream * s) {
   int b = s->peek();
-  return ((b < 128) || 
-    (b >= 224) || 
-    (b == 0xcc) || 
-    (b == 0xcd) || 
-    (b == 0xce) || 
-    (b == 0xcf) || 
-    (b == 0xd0) || 
-    (b == 0xd1) || 
-    (b == 0xd2) || 
+  return ((b < 128) ||
+    (b >= 224) ||
+    (b == 0xcc) ||
+    (b == 0xcd) ||
+    (b == 0xce) ||
+    (b == 0xcf) ||
+    (b == 0xd0) ||
+    (b == 0xd1) ||
+    (b == 0xd2) ||
     (b == 0xd3));
 }
 
 bool msgpck_signed_next(Stream * s) {
   int b = s->peek();
-  return (b != -1) && ((b >= 224) || 
-    (b == 0xd0) || 
-    (b == 0xd1) || 
-    (b == 0xd2) || 
+  return (b != -1) && ((b >= 224) ||
+    (b == 0xd0) ||
+    (b == 0xd1) ||
+    (b == 0xd2) ||
     (b == 0xd3));
 }
 
@@ -205,30 +205,30 @@ bool msgpck_float_next(Stream * s) {
 
 bool msgpck_string_next(Stream * s) {
   int b = s->peek();
-  return (b != -1) && (((b >> 5) == 5) || 
-    (b == 0xd9) || 
-    (b == 0xda) || 
+  return (b != -1) && (((b >> 5) == 5) ||
+    (b == 0xd9) ||
+    (b == 0xda) ||
     (b == 0xdb));
 }
 
 bool msgpck_bin_next(Stream * s) {
   int b = s->peek();
-  return (b != -1) && ((b == 0xc4) || 
-    (b == 0xc5) || 
+  return (b != -1) && ((b == 0xc4) ||
+    (b == 0xc5) ||
     (b == 0xc6));
 }
 
 bool msgpck_array_next(Stream * s) {
   int b = s->peek();
-  return (b != -1) && (((b >> 4) == 9) || 
-    (b == 0xdc) || 
+  return (b != -1) && (((b >> 4) == 9) ||
+    (b == 0xdc) ||
     (b == 0xdd));
 }
 
 bool msgpck_map_next(Stream * s) {
   int b = s->peek();
-  return (b != -1) && (((b >> 4) == 8) || 
-    (b == 0xde) || 
+  return (b != -1) && (((b >> 4) == 8) ||
+    (b == 0xde) ||
     (b == 0xdf));
 }
 
@@ -287,13 +287,13 @@ bool msgpck_read_integer(Stream * s, byte *b, uint8_t max_size) {
   }
   if(read_size > max_size)
     return false;
-    
+
   bool res = true;
   int8_t i;
   for(i = read_size-1; i >= 0; i--) {
     res &= s->readBytes(&b[i],1);
   }
-  
+
   if(neg && ((b[read_size-1] >> 7) == 1)) {
     for(i = max_size-1; i >= read_size; i--) {
       b[i] = 0xff;
@@ -660,9 +660,9 @@ void msgpck_write_map_header(Stream * s, uint32_t map_size) {
 void flush_buf(char * buf, uint16_t buf_size) {
   uint16_t i;
   for(i = 0; i < buf_size; i++) {
-    buf[i] = ' ';  
+    buf[i] = ' ';
   }
-  buf[buf_size] = '\0';  
+  buf[buf_size] = '\0';
 }
 
 void print_string(Stream * output, char * str, uint16_t str_size) {
@@ -687,39 +687,39 @@ void msgpck_to_json(Stream * output, Stream * input) {
   if(msgpck_map_next(input)) {
     uint32_t map_size;
     msgpck_read_map_size(input, &map_size);
-    output->print("{");
+    output->print(F("{"));
     for(i = 0; i < map_size; i++) {
       if(i != 0)
-        output->print(", ");
+        output->print(F(", "));
       flush_buf( buf, buf_size);
       uint32_t r_size;
       msgpck_read_string(input, buf, buf_size, &r_size);
-      output->print("\"");
+      output->print(F("\""));
       print_string(output, buf, r_size);
-      output->print("\": ");
+      output->print(F("\": "));
       msgpck_to_json(output, input);
     }
-    output->print("}");
+    output->print(F("}"));
   } else if(msgpck_array_next(input)) {
     uint32_t array_size;
     msgpck_read_array_size(input, &array_size);
-    output->print("[");
+    output->print(F("["));
     for(i = 0; i < array_size; i++) {
       if(i != 0)
-        output->print(", ");
+        output->print(F(", "));
       msgpck_to_json(output, input);
     }
-    output->print("]");
+    output->print(F("]"));
   } else if (msgpck_nil_next(input)) {
     msgpck_read_nil(input);
-    output->print("nil");
+    output->print(F("nil"));
   } else if(msgpck_bool_next(input)) {
     bool b;
     msgpck_read_bool(input, &b);
     if(b) {
-      output->print("true");
+      output->print(F("true"));
     } else {
-      output->print("false");
+      output->print(F("false"));
     }
   } else if(msgpck_integer_next(input)) {
     if(msgpck_signed_next(input)) {
@@ -741,16 +741,14 @@ void msgpck_to_json(Stream * output, Stream * input) {
     flush_buf( buf, buf_size);
     uint32_t r_size;
     msgpck_read_string(input, buf, buf_size, &r_size);
-    output->print("\"");
+    output->print(F("\""));
     print_string(output, buf, r_size);
-    output->print("\"");
+    output->print(F("\""));
   } else if(msgpck_bin_next(input)) {
     flush_buf( buf, buf_size);
     uint32_t r_size;
     msgpck_read_bin(input,(unsigned char *)  buf, buf_size, &r_size);
     print_bin(output, (unsigned char *) buf, r_size);
-    output->print("'");
+    output->print(F("'"));
   }
 }
-
-
