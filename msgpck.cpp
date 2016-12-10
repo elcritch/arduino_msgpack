@@ -232,6 +232,22 @@ bool msgpck_map_next(Stream * s) {
     (b == 0xdf));
 }
 
+bool msgpck_ext_next(Stream * s) {
+  int b = s->peek();
+  return (b != -1) && ((b == 0xc7) ||
+    (b == 0xc8) ||
+    (b == 0xc9));
+}
+
+bool msgpck_fixext_next(Stream * s) {
+  int b = s->peek();
+  return (b != -1) && ((b == 0xd4) ||
+    (b == 0xd5) ||
+    (b == 0xd6) ||
+    (b == 0xd7) ||
+    (b == 0xd8));
+}
+
 bool msgpck_read_nil(Stream * s) {
   uint8_t rfb;
   return ((s->readBytes(&rfb,1) == 1) && (rfb == 0xc0));
