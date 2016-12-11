@@ -391,6 +391,48 @@ bool msgpck_read_string(Stream * s, char * str, uint32_t max_size) {
   return msgpck_read_string(s, str, max_size, &read_size);
 }
 
+bool msgpck_read_ext(Stream * s, byte *ext_type, byte *bin, uint8_t max_size, uint32_t *bin_size) {
+  byte fb, tb;
+  uint32_t read_size = 0;
+  uint8_t * p = (uint8_t *) &read_size;
+
+  if (s->readBytes(&fb,1) != 1 && s->readBytes(&tb,1) != 1)
+    return false;
+
+  if(fb == 0xc7) { // ext 8
+    b &= s->readBytes(&p[0],1) == 1;
+  } else if(fb == 0xc8) { // ext 16
+    b &= s->readBytes(&p[1],1) == 1;
+    b &= s->readBytes(&p[0],1) == 1;
+  } else if(fb == 0xc8) { // ext 32
+    b &= s->readBytes(&p[3],1) == 1;
+    b &= s->readBytes(&p[2],1) == 1;
+    b &= s->readBytes(&p[1],1) == 1;
+    b &= s->readBytes(&p[0],1) == 1;
+  } else if (fb == 0xd4) { // fixext 1
+    read_size = 1;
+  } else if (fb == 0xd5) {  // fixext 2
+    read_size = 2;
+  } else if (fb == 0xd6) {  // fixext 4
+    read_size = 4;
+  } else if (fb == 0xd7) {  // fixext 8
+    read_size = 8;
+  } else if (fb == 0xd8) {  // fixext 16
+    read_size = 16;
+  } else {
+    return false;
+  }
+
+  *bin_size = read_size;
+  *ext_type = tp;
+  if(read_size > max_size)
+    return false;
+
+  bool res = true;
+  res &= s->readBytes(bin,read_size) == read_size;
+  return res;
+}
+
 
 bool msgpck_read_bin(Stream * s, byte * bin, uint32_t max_size, uint32_t *bin_size) {
   uint8_t fb;
