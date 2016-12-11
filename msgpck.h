@@ -144,6 +144,27 @@ bool msgpck_array_next(Stream * s);
 */
 bool msgpck_map_next(Stream * s);
 
+/**
+ * Function: msgpck_ext_next
+ * Description: Look at Stream s's buffer and return if it matches the call type.
+ *
+ * Parameter: Stream * s : input stream.
+ *
+ * return: true if next data is a ext, false if not
+ *
+*/
+bool msgpck_ext_next(Stream * s);
+
+/**
+ * Function: msgpck_fixext_next
+ * Description: Look at Stream s's buffer and return if it matches the call type.
+ *
+ * Parameter: Stream * s : input stream.
+ *
+ * return: true if next data is a fixext, false if not
+ *
+*/
+bool msgpck_fixext_next(Stream * s);
 
 // ************************** Readers *****************************/
 
@@ -221,6 +242,21 @@ bool msgpck_read_string(Stream * s, char * str, uint32_t max_size, uint32_t *str
  *
 */
 bool msgpck_read_string(Stream * s, char * str, uint32_t max_size);
+
+/**
+ * Function: msgpck_read_ext
+ * Description: Read the first data of Stream s's buffer if it is a bin.
+ *
+ * Parameter: Stream * s : input stream.
+ *  int8_t * ext_type: pointer to the read ext_type
+ *  byte * bin: pointer to the read value
+ *  uint32_t max_size: max size in byte of the expected value
+ *  uint32_t *str_size: pointer to the actual size of the read bin
+ *
+ * return: true if next data has been read correctly, false if not
+ *
+*/
+bool msgpck_read_ext(Stream * s, uint8_t * ext_type, byte * bin, uint8_t max_size, uint32_t *bin_size);
 
 /**
  * Function: msgpck_read_bin
@@ -418,6 +454,32 @@ void msgpck_write_string(Stream * s, String str);
  *
 */
 void msgpck_write_bin(Stream * s, byte * b, uint32_t bin_size);
+
+
+/**
+ * Function: msgpck_write_ext
+ * Description: Write ext type and data on the output stream
+ *
+ * Parameter: Stream * s : output stream.
+ *  uint8_t * ext_type: ext type
+ *  byte * b: ext bin to write
+ *  uint32_t bin_size: size of the ext bin to write
+ *
+*/
+void msgpck_write_ext(Stream * s, uint8_t ext_type, byte * b, uint32_t bin_size);
+
+
+/**
+ * Function: msgpck_write_fixext
+ * Description: Write fixext type and data on the output stream, truncates data largest fixext size - pad accordingly
+ *
+ * Parameter: Stream * s : output stream.
+ *  uint8_t * ext_type: ext type
+ *  byte * b: ext bin to write
+ *  uint32_t bin_size: size of the ext bin to write, truncated to one of 1,2,4,8,16
+ *
+*/
+void msgpck_write_fixext(Stream * s, uint8_t ext_type, byte * b, uint8_t bin_size);
 
 /**
  * Function: msgpck_write_array_header

@@ -236,7 +236,8 @@ bool msgpck_ext_next(Stream * s) {
   int b = s->peek();
   return (b != -1) && ((b == 0xc7) ||
     (b == 0xc8) ||
-    (b == 0xc9));
+    (b == 0xc9)) ||
+    msgpck_fixext_next(s);
 }
 
 bool msgpck_fixext_next(Stream * s) {
