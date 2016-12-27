@@ -17,7 +17,8 @@
 #ifndef heads_msgpck_h
 #define heads_msgpck_h
 
-#include "Arduino.h"
+#include <Arduino.h>
+#include <Stream.h>
 
 // ************************** Look up *****************************/
 
