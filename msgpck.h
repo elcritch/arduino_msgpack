@@ -519,4 +519,17 @@ class StreamBuff : public Stream
 
 };
 
+template<size_t BUFFER_LEN>
+class StreamBuffStack : public StreamBuff
+{
+  uint8_t data_buf_stack[BUFFER_LEN];
+
+  public:
+
+    StreamBuffStack() : StreamBuff(data_buf_stack, BUFFER_LEN)
+    {
+    }
+
+};
+
 #endif
