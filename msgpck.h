@@ -20,6 +20,10 @@
 #include <Arduino.h>
 #include <Stream.h>
 
+#ifndef MSG_PACK_JSON_BUFF_SIZE
+#define MSG_PACK_JSON_BUFF_SIZE 15
+#endif
+
 // ************************** Look up *****************************/
 
 /**

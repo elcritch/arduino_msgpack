@@ -682,7 +682,7 @@ void print_bin(Stream * output, byte * str, uint16_t str_size) {
 
 void msgpck_to_json(Stream * output, Stream * input) {
   uint8_t i;
-  uint16_t buf_size = 15;
+  uint16_t buf_size = MSG_PACK_JSON_BUFF_SIZE;
   char buf[buf_size+1];
   if(msgpck_map_next(input)) {
     uint32_t map_size;
