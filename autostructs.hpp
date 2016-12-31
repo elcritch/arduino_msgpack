@@ -8,6 +8,8 @@
 // #include <tuple>
 // #include <type_traits>
 
+typedef void * void_t;
+typedef void_t (*getter_t)();
 
 #define AUTO_STRUCT_FIELD(fieldname) \
     template<typename Q_T> \
@@ -18,6 +20,7 @@
         }; \
         Q_T fieldname; \
         using Q_type = Q_T; \
+        typedef Q_T (*getter_func_ptr)(); \
         constexpr static char const *Q_name() { return #fieldname; } \
         Q_T &Q_value() & { return fieldname; } \
         Q_T const &Q_value() const & { return fieldname; } \
@@ -105,7 +108,9 @@ namespace autostruct {
         {
             char __attribute__((unused)) discard[] = {(
                 f(Fields::Q_name(), offset_of<Fields>(), size_of<Fields>(),
-                  Trait<typename Fields::Q_type>::value())
+                  Trait<typename Fields::Q_type>::value()
+                  // , Fields::Q_getter_ptr()
+                  )
             , '\0')...};
         }
 

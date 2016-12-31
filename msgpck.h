@@ -24,6 +24,21 @@
 #define MSG_PACK_JSON_BUFF_SIZE 15
 #endif
 
+enum AutoTypes : uint8_t {
+  msgpck_empty = 0xff,
+  msgpck_nil = 0xc0,
+  msgpck_bool = 0xc2,
+  msgpck_uint = 0xcc,
+  msgpck_sint = 0xd0,
+  msgpck_float = 0xca,
+  msgpck_string = 0xd9,
+  msgpck_bin = 0xc4,
+  msgpck_ext = 0xc7,
+  msgpck_array = 0xdc,
+  msgpck_map = 0xde,
+  msgpck_unknown = 0x00,
+};
+
 // ************************** Look up *****************************/
 
 /**

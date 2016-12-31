@@ -17,18 +17,19 @@
 #include "Arduino.h"
 #include "msgpck.h"
 
-#define msgpck_empty 0xff
-#define msgpck_nil 0xc0
-#define msgpck_bool 0xc2
-#define msgpck_uint 0xcc
-#define msgpck_sint 0xd0
-#define msgpck_float 0xca
-#define msgpck_string 0xd9
-#define msgpck_bin 0xc4
-#define msgpck_ext 0xc7
-#define msgpck_array 0xdc
-#define msgpck_map 0xde
-#define msgpck_unknown 0x00
+// #define msgpck_empty 0xff
+// #define msgpck_nil 0xc0
+// #define msgpck_bool 0xc2
+// #define msgpck_uint 0xcc
+// #define msgpck_sint 0xd0
+// #define msgpck_float 0xca
+// #define msgpck_string 0xd9
+// #define msgpck_bin 0xc4
+// #define msgpck_ext 0xc7
+// #define msgpck_array 0xdc
+// #define msgpck_map 0xde
+// #define msgpck_unknown 0x00
+
 
 uint8_t msgpck_what_next(Stream * s) {
   int b = s->peek();
