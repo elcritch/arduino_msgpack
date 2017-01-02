@@ -26,6 +26,7 @@ typedef void_t (*getter_t)();
         typedef  Q_T (fieldname::*MemberFunc)();  \
         const constexpr static MemberFunc& Q_addr() { return &fieldname::Q_get; } \
         Q_T Q_get() { return fieldname; } \
+        void Q_set(Q_T val) { fieldname = val; } \
         Q_T &Q_value() & { return fieldname; } \
         Q_T const &Q_value() const & { return fieldname; } \
         Q_T &&Q_value() && { return fieldname; } \
