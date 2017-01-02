@@ -11,6 +11,8 @@
 typedef void * void_t;
 typedef void_t (*getter_t)();
 
+#define CALL_MEMBER_FN(object,ptrToMember)  ((object).*(ptrToMember))
+
 #define AUTO_STRUCT_FIELD(fieldname) \
     template<typename Q_T> \
     struct fieldname { \
@@ -20,8 +22,10 @@ typedef void_t (*getter_t)();
         }; \
         Q_T fieldname; \
         using Q_type = Q_T; \
-        typedef Q_T (*getter_func_ptr)(); \
         constexpr static char const *Q_name() { return #fieldname; } \
+        typedef  Q_T (fieldname::*MemberFunc)();  \
+        const constexpr static MemberFunc& Q_addr() { return &fieldname::Q_get; } \
+        Q_T Q_get() { return fieldname; } \
         Q_T &Q_value() & { return fieldname; } \
         Q_T const &Q_value() const & { return fieldname; } \
         Q_T &&Q_value() && { return fieldname; } \
@@ -110,6 +114,7 @@ namespace autostruct {
                 f(Fields::Q_name(), offset_of<Fields>(), size_of<Fields>(),
                   Trait<typename Fields::Q_type>::value()
                   // , Fields::Q_getter_ptr()
+                  // , Fields::Q_addr()
                   )
             , '\0')...};
         }
