@@ -27,12 +27,23 @@ typedef void_t (*getter_t)();
         const constexpr static MemberFunc& Q_addr() { return &fieldname::Q_get; } \
         Q_T Q_get() { return fieldname; } \
         void Q_set(Q_T val) { fieldname = val; } \
+        bool Q_visitor(autostruct::AutoVisitor& v) { v.handle(fieldname); } \
         Q_T &Q_value() & { return fieldname; } \
         Q_T const &Q_value() const & { return fieldname; } \
         Q_T &&Q_value() && { return fieldname; } \
     };
 
 namespace autostruct {
+
+  struct AutoVisitor {
+
+    bool handle() { std::cout << "handler: " << std::endl; return false; }
+    virtual bool handle(float& val) { return this->handle(); }
+    virtual bool handle(int& val) { return this->handle(); }
+    virtual bool handle(const char *& val) { return this->handle(); }
+  };
+
+
     namespace detail {
         template<typename T, typename Enable = void> struct enum_value_type;
         template<typename T>

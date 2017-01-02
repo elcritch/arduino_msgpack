@@ -6,15 +6,17 @@
 // AUTO_STRUCT_FIELD(foo);
 // AUTO_STRUCT_FIELD(bar);
 #include "msgpck.h"
+#include "autostructs.hpp"
 #include <cstdint>
 
 namespace autostruct {
 
+
+  /* ========= Select Field ========== */
+
 template <typename T> struct converter {
   template <typename U> T operator()(U &&x) { return T(x); }
 };
-
-/* ========= Select Field ========== */
 
 template <typename R, typename Field, typename... Fields, typename Visitor,
           typename... AllFields>
@@ -44,43 +46,46 @@ auto select_field(Visitor &&v, char const *name,
 
 /* ========= Put Field ========== */
 
-template <typename T> struct setter {
+// template <typename T> struct setter {
+//
+//   T val;
+//
+//   setter(T v) { this->val = v; }
+//
+//   template <typename U> T operator()(U &&x) { x = val; }
+// };
 
-  T val;
 
-  setter(T v) { this->val = v; }
-
-  template <typename U> T operator()() { return val; }
-};
-
-
-template <typename Field, typename... Fields, typename Visitor,
+template <typename Field, typename... Fields, typename AV,
           typename... AllFields>
-bool _put_field(Visitor &&v, char const *name,
+bool _put_field(AutoVisitor &&v, char const *name,
                 Struct<AllFields...> &a_struct) {
   if (strcmp(name, Field::Q_name()) == 0) {
-    a_struct.Field::Q_set(v);
-    return true;
+    std::cout << "put handler visitor!! found!!" << std::endl;
+    return a_struct.Field::Q_visitor(v);
   }
-  else
-    return _put_field<Fields...>(static_cast<Visitor &&>(v), name,
+  else {
+    std::cout << "put handler visitor!! calling!!" << std::endl;
+    return _put_field<AV, Fields...>(static_cast<AV &&>(v), name,
                                        a_struct);
+                                     }
 }
 
-template <typename Visitor, typename... AllFields>
-bool _put_field(Visitor &&v, char const *name,
+template <typename AV, typename... AllFields>
+bool _put_field(AV &&v, char const *name,
                 Struct<AllFields...> &a_struct) {
   // throw std::runtime_error("bad field name");
+  std::cout << "put handler visitor!! error!! " << std::endl;
   return false;
 }
 
-template <typename Visitor, typename Field, typename... AllFields>
-bool put_field(Visitor &&v, char const *name,
+template <typename AV, typename Field, typename... AllFields>
+bool put_field(AV &&v, char const *name,
                   Struct<Field, AllFields...> &a_struct)
   {
 
-  return _put_field<Field,
-                       AllFields...>(static_cast<Visitor &&>(v), name,
+  return _put_field<AV, Field,
+                       AllFields...>(static_cast<AV &&>(v), name,
                                      a_struct);
 }
 
@@ -174,6 +179,13 @@ bool automsg_deserialize_array(Stream *instream, AS *astruct) {
   if (!result)
     return false;
 
+  // for (size_t idx = 0; idx < sz; ++idx) {
+  //
+  //
+  //   float bar2 = autostruct::select_field(autostruct::converter<float>(), "bar", foobar);
+  //
+  //
+  // }
 
 
   return true;
