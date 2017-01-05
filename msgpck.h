@@ -467,7 +467,7 @@ void msgpck_write_map_header(Stream * s, uint32_t map_size);
  *  Stream * input : input stream.
  *
 */
-void msgpck_to_json(Stream * output, Stream * input);
+void msgpck_to_json(Stream * output, Stream * input, size_t BUFFER_SIZE);
 
 
 

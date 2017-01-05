@@ -681,10 +681,11 @@ void print_bin(Stream * output, byte * str, uint16_t str_size) {
   }
 }
 
-void msgpck_to_json(Stream * output, Stream * input) {
+
+void msgpck_to_json(Stream * output, Stream * input, size_t BUFFER_SIZE) {
   uint8_t i;
-  uint16_t buf_size = MSG_PACK_JSON_BUFF_SIZE;
-  char buf[buf_size+1];
+  uint16_t buf_size = BUFFER_SIZE;
+  char buf[BUFFER_SIZE+1];
   if(msgpck_map_next(input)) {
     uint32_t map_size;
     msgpck_read_map_size(input, &map_size);
@@ -698,7 +699,7 @@ void msgpck_to_json(Stream * output, Stream * input) {
       output->print(F("\""));
       print_string(output, buf, r_size);
       output->print(F("\": "));
-      msgpck_to_json(output, input);
+      msgpck_to_json(output, input, BUFFER_SIZE);
     }
     output->print(F("}"));
   } else if(msgpck_array_next(input)) {
@@ -708,7 +709,7 @@ void msgpck_to_json(Stream * output, Stream * input) {
     for(i = 0; i < array_size; i++) {
       if(i != 0)
         output->print(F(", "));
-      msgpck_to_json(output, input);
+      msgpck_to_json(output, input, BUFFER_SIZE);
     }
     output->print(F("]"));
   } else if (msgpck_nil_next(input)) {
